@@ -40,7 +40,7 @@ characterImg.onload = function() {
 
     // Define initial character position
     characterX = 100; // places character on the left side of the screen
-    
+    characterY = 208; // places character on the ground
 
     // Once the character image is loaded, start the game loop
     gameLoop();
@@ -56,8 +56,8 @@ characterImages['character-left'].src = './assets/character-left.png';
 characterImages['character-right'].src = './assets/character-right.png';
 
 // Define initial character position
-var characterX = canvas.width / 2 - characterWidth / 2; // Center horizontally
-var characterY = canvas.height / 2 - characterHeight / 2 + 210; // Center vertically with a 20px offset down
+var characterX = 100; // Assign a default character position    
+var characterY = 208; // Assign a default character position
 // Define initial character model
 var characterModel = 'character-right'; // Assign a default character model
 
@@ -133,24 +133,21 @@ window.addEventListener('keyup', function(event) {
 
 
 // Add these variables to your script
-var gravity = 0.5;
-var jumpStrength = 15;
+var gravity = 0.4;
+var jumpStrength = 8;
 var isJumping = false;
 var velocityY = 0;
 
 var boundaries = [
-    { x: 256, y: 144, width: 15, height: 15 },
-    { x: 320, y: 144, width: 80, height: 15 },
-    { x: 352, y: 80, width: 15, height: 15 },
-    { x: 448, y: 175, width: 30, height: 32 },
-    { x: 608, y: 160, width: 30, height: 48},
-    { x: 736, y: 144, width: 30, height: 64},
-    { x: 912, y: 144, width: 30, height: 64},
-    
-];
-
-var gaps = [
-    {x: 1104, y: 170, width: 30, height: 70, isGap: true},
+    { x: 0, y: 208, width: 1103, height: 31 },// Ground    
+    { x: 256, y: 144, width: 15, height: 15 }, //obstacle
+    { x: 320, y: 144, width: 80, height: 15 }, //obstacle
+    { x: 352, y: 80, width: 15, height: 15 }, //obstacle
+    { x: 448, y: 175, width: 30, height: 32 }, //obstacle
+    { x: 608, y: 160, width: 30, height: 48}, //obstacle
+    { x: 736, y: 144, width: 30, height: 64}, //obstacle
+    { x: 912, y: 144, width: 30, height: 64}, //obstacle
+    { x: 1136, y: 208, width: 239, height: 31 }, // Ground
 ];
 
 
@@ -172,24 +169,6 @@ function handleMovement() {
         characterModel = 'character-right';
     }
 
-    // Check for horizontal collisions
-    var horizontalCollision = false;
-    boundaries.forEach(function(boundary) {
-        if (
-            newX + characterWidth > boundary.x &&
-            newX < boundary.x + boundary.width &&
-            characterY + characterHeight > boundary.y &&
-            characterY < boundary.y + boundary.height
-        ) {
-            horizontalCollision = true;
-        }
-    });
-
-    // Only update character's horizontal position if there's no horizontal collision
-    if (!horizontalCollision) {
-        characterX = newX;
-    }
-
     // Handle jumping
     if (keys["ArrowUp"] && !isJumping) {
         velocityY = -jumpStrength;
@@ -200,57 +179,38 @@ function handleMovement() {
     velocityY += gravity;
     newY += velocityY;
 
-    // Check for vertical collisions
-    var verticalCollision = false;
-    var onBoundary = false;
-    boundaries.forEach(function(boundary) {
-        if (
-            characterX + characterWidth > boundary.x &&
-            characterX < boundary.x + boundary.width &&
-            newY + characterHeight > boundary.y &&
-            newY < boundary.y + boundary.height
-        ) {
-            verticalCollision = true;
-            if (newY + characterHeight <= boundary.y + boundary.height && velocityY >= 0) {
-                onBoundary = true;
+    // Horizontal collision detection
+    for (var i = 0; i < boundaries.length; i++) {
+        var boundary = boundaries[i];
+        
+        // Check if the character intersects with the boundary horizontally
+        if (newX + characterWidth > boundary.x && newX < boundary.x + boundary.width) {
+            // Check if the character is above the boundary and moving downwards
+            if (newY < boundary.y + boundary.height && newY + characterHeight > boundary.y && velocityY >= 0) {
+                // Adjust the character position to stay above the boundary
+                newY = boundary.y - characterHeight;
+                isJumping = false; // Reset jump state
+                velocityY = 0; // Reset velocity
             }
         }
-    });
+    }
 
-    // Check if the character hits a gap
-    gaps.forEach(function(gap) {
-        if (
-            characterX + characterWidth > gap.x &&
-            characterX < gap.x + gap.width &&
-            newY + characterHeight > gap.y &&
-            newY < gap.y + gap.height
-        ) {
-            // If the character hits a gap, they fall through the floor
-            characterY = canvas.height; // You can adjust this value based on where you want them to fall
-            isJumping = false; // Reset jump state
+    // Vertical collision detection (jumping up)
+    for (var i = 0; i < boundaries.length; i++) {
+        var boundary = boundaries[i];
+        
+        // Check if the character intersects with the bottom of the boundary when jumping up
+        if (newY + characterHeight > boundary.y && newY < boundary.y + boundary.height &&
+            newX + characterWidth > boundary.x && newX < boundary.x + boundary.width && velocityY < 0) {
+            // Adjust the character position to prevent passing through the bottom
+            newY = boundary.y + boundary.height;
             velocityY = 0; // Reset velocity
         }
-    });
-
-    // Only update character's vertical position if there's no vertical collision
-    if (!verticalCollision) {
-        characterY = newY;
     }
 
-    // Apply gravity only if the character is not on a boundary
-    if (!onBoundary) {
-        velocityY += gravity;
-    } else {
-        velocityY = 0;
-        isJumping = false;
-    }
-
-    // Check for collisions with the ground
-    if (characterY >= canvas.height / 2 - characterHeight / 2 + 17) {
-        characterY = canvas.height / 2 - characterHeight / 2 + 17;
-        isJumping = false;
-        velocityY = 0;
-    }
+    // Update character position
+    characterX = newX;
+    characterY = newY;
 }
 // Start the game loop
 gameLoop();
