@@ -249,7 +249,7 @@ function handleMovement() {
         var boundary = boundaries[i];
         
             // Check vertical collision
-        if (newX + characterWidth > boundary.x && newX < boundary.x + boundary.width &&
+        if (characterX + characterWidth > boundary.x && characterX < boundary.x + boundary.width &&
             newY + characterHeight > boundary.y && newY < boundary.y + boundary.height) {
             // Check if the character is falling and collides with the top of the boundary
             if (velocityY > 0 && newY < boundary.y) {
@@ -263,9 +263,11 @@ function handleMovement() {
                 velocityY = 0; // Reset velocity
             }
         }
-        let buffer = 5; // Adjust as needed
+        // Buffer for pushing the player away from a wall after collision.
+        // Setting to 0 effectively turns off the buffer.
+        let buffer = 0; // Adjust as needed
             // Check horizontal collision
-        if (newY + characterHeight > boundary.y && newY < boundary.y + boundary.height &&
+        if (characterY + characterHeight > boundary.y && characterY < boundary.y + boundary.height &&
             newX + characterWidth > boundary.x && newX < boundary.x + boundary.width) {
             // Check if moving left
             if (keys["ArrowLeft"]) {
