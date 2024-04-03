@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My 8-Bit Space Game</title>
+    <title>Mario 2D</title>
     <style>
         /* Reset default styles */
         * {
@@ -17,50 +17,29 @@
             align-items: center;
             width: 3584px;
             height: 345px;
-            
-            position: absolute;
-            overflow: hidden;
+            position: relative;
+            padding-top: 80px;
+            z-index: 1;
         }
-
-        /* Style the game elements */
-        .game-element {
-            position: absolute;
+       
+        #flag {
+            position: relative;
+            top: -100px; /* Adjust as needed */
+            left: -1300px; /* Adjust as needed */
+            /* Additional styles */
+            width: 50px; /* Adjust width as needed */
+            height: auto; /* Maintain aspect ratio */
+            z-index: 2;
             display: flex;
-            justify-content: center;
-            width: 16px; /* Adjust the width as needed */
-            height: 16px; /* Adjust the height as needed */
-            background-color: white;
-        }
-
-        /* Example styling for player character */
-        .player {
-            background-color: #f00; /* Set the color to red */
-        }
-
-        /* Example styling for enemy character */
-        .enemy {
-            background-color: #0f0; /* Set the color to green */
-        }
-
-        /* Example styling for game obstacles */
-        .obstacle {
-            background-color: #00f; /* Set the color to blue */
-        }
-
-        /* Ensure pixel-perfect rendering */
-        .game-element {
-            image-rendering: optimizeSpeed;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: optimize-contrast;
-            -ms-interpolation-mode: nearest-neighbor;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <img src="./assets/flag.png" alt="Flag" id="flag">
         <!-- Game elements will be dynamically added here -->
     </div>
+   
     <script src="script.js"></script>
 </body>
 </html>
