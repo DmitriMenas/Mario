@@ -285,4 +285,3 @@ function handleMovement() {
     characterX = newX;
     characterY = newY;
 }
-// this is a test.
