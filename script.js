@@ -71,6 +71,9 @@ var camera = {
     zoom: 2 // Increase for more zoom
 };
 
+// Flag image setup.
+var flagImage = new Image();
+flagImage.src = './assets/flag.png';
 
 
 // Main game loop
@@ -106,6 +109,15 @@ function updateScrollPosition() {
     window.scrollTo(desiredScrollX, window.scrollY);
 }
 
+// Draw a game object to the screen in its relative map location
+function drawObject(img, x, y, width, height) {
+    // Check image is loaded properly.
+    // Copied from render, may not be the best method.
+    if (img && img.complete) {
+        ctx.drawImage(img, (x - camera.x) * camera.zoom, (y - camera.y) * camera.zoom, width * camera.zoom, height * camera.zoom);
+    }
+}
+
 // Render game world
 function render() {
     // Clear canvas
@@ -119,7 +131,12 @@ function render() {
     if (characterImage && characterImage.complete) {
         ctx.drawImage(characterImage, (characterX - camera.x) * camera.zoom, (characterY - camera.y) * camera.zoom, characterWidth * camera.zoom, characterHeight * camera.zoom);
     }
+
+    // Draw flag
+    // From boundaries, flag = { x: 3168, y: 192, width: 15, height: 15, exit: true}
+    drawObject(flagImage, 3168, 60, 15, 15);
 }
+
 
 // Movement function based on arrow keys
 // Create an object to keep track of which keys are being pressed
@@ -192,12 +209,7 @@ var boundaries = [
     { x: 2976, y: 112, width: 63, height: 15}, //stacked obstacle- up
     { x: 2992, y: 96, width: 47, height: 15}, //stacked obstacle- up
     { x: 3008, y: 80, width: 31, height: 15}, //stacked obstacle- up
-    { x: 3168, y: 192, width: 15, height: 15, exit: true}, // Flag
-];
-
-// Define the image URLs array
-var imageUrls = [
-    './assets/flag.png',
+    { x: 3168, y: 60 /* changed by funny */, width: 15, height: 15, exit: true}, // Flag
 ];
 
 // Call the dropFlag function when the character reaches the exit point
